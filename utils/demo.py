@@ -1,11 +1,21 @@
 #! /bin/env python
 import requests
 from collections import namedtuple
+import os
 import sys
+import urllib.request
 from bs4 import BeautifulSoup
 import json
 
 # this code is just for : [ http://dict.cn ]
+
+
+def _connect(host='https://www.baidu.com'):
+    try:
+        urllib.request.urlopen(host) #Python 3.x
+        return True
+    except:
+        return False
 
 
 def curlWordInfo(word):
@@ -30,22 +40,35 @@ def curlWordInfo(word):
     keyword = word
     # just use one item ; if you want to gain more info you can change my code
     phonetic = phonetic_divs[0].string[1:-1]
-    trans = trans_divs[0].string
+    temp = [trans_divs[i].string for i in range(len(trans_divs))]
+    trans = " ".join(temp)
     return Word(keyword, trans, phonetic)
 
 
 def word2json(word_info):
-    word_dict = dict(word._asdict())
+    word_dict = dict(word_info._asdict())
     word_json = json.dumps(word_dict, ensure_ascii=False)
     print(word_json)
     return word_json
 
 
+def saveToFile(file_name):
+    ...
+
+
+def fmtOutput(wordobj):
+    print(wordobj.content)
+    print(wordobj.definition)
+    print(wordobj.pron)
+
+
 if __name__ == '__main__':
     assert (len(sys.argv) == 2)
-    Word = namedtuple('Word', ["keyword", "phonetic", "translate"])
+    assert (_connect() == True)
+    Word = namedtuple('Word', ["content", "definition", "pron"])
     word = curlWordInfo(sys.argv[-1])
     word_json = word2json(word)
+    #  fmtOutput(word)
 
 # ----------------------------------
 #  class Word:
