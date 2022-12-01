@@ -8,6 +8,7 @@ from bs4 import BeautifulSoup
 import json
 
 # this code is just for : [ http://dict.cn ]
+FILE_PATH = '/home/zh/.myword'
 
 
 def _connect(host='https://www.baidu.com'):
@@ -48,12 +49,13 @@ def curlWordInfo(word):
 def word2json(word_info):
     word_dict = dict(word_info._asdict())
     word_json = json.dumps(word_dict, ensure_ascii=False)
-    print(word_json)
     return word_json
 
 
-def saveToFile(file_name):
-    ...
+def saveToFile(file_path, word):
+    assert (os.path.exists(file_path) == True)
+    with open(file_path, 'a+') as appender:
+        appender.writelines(word)
 
 
 def fmtOutput(wordobj):
@@ -68,7 +70,8 @@ if __name__ == '__main__':
     Word = namedtuple('Word', ["content", "definition", "pron"])
     word = curlWordInfo(sys.argv[-1])
     word_json = word2json(word)
-    #  fmtOutput(word)
+    fmtOutput(word)
+    saveToFile(FILE_PATH, word_json)
 
 # ----------------------------------
 #  class Word:
